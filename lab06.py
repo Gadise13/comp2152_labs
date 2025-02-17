@@ -1,11 +1,32 @@
-#Gadise Oli
-#101295074
+# # reading
 
+# f = open("dontwant.txt")
+# print(f) 
+
+# s= f.readline()
+# print(s)
+
+# f.close()
+
+# # writing
+# f = open("dontwant.txt", "w")
+# f.write("some line\n")
+# f.write("more lines\n")
+# f.close()
+
+# #Appending
+# with open("dontwant.txt", "a") as f:
+#     #s = f.readlines()
+#    # print(s)
+#    f.write("Extra line\n")
+  
+
+  
 # Import the random library to use for the dice later
 import random
 
 # Put all the functions into another file and import them
-import functions_lab05
+import functions_lab06
 
 # Game Flow
 # Define two Dice
@@ -17,8 +38,6 @@ weapons = ["Fist", "Knife", "Club", "Gun", "Bomb", "Nuclear Bomb"]
 
 # Define the Loot
 loot_options = ["Health Potion", "Poison Potion", "Secret Note", "Leather Boots", "Flimsy Gloves"]
-good_loot_options = ["Health Potion", "Leather Boots"]
-bad_loot_options = ["Poison Potion"]
 belt = []
 
 # Define the Monster's Powers
@@ -30,6 +49,25 @@ monster_powers = {
 
 # Define the number of stars to award the player
 num_stars = 0
+
+#Question 5: loading a saved game
+# Question 5: loading a saved game
+monster_won_recently = False
+
+try:
+    with open("save.txt", "r") as f:  # Use "r" mode for reading
+        lines = f.readlines()
+        if lines:  # Ensure the file is not empty
+            most_recent_game = lines[-1].strip()
+            print(most_recent_game)
+            monster_won_recently = most_recent_game == "monster has killed the hero previously."
+        else:
+            print("Save file is empty. Starting fresh.")
+
+except FileNotFoundError:
+    print("Save file not found. Starting fresh.")
+
+
 
 # Loop to get valid input for Hero and Monster's Combat Strength
 i = 0
@@ -65,6 +103,18 @@ if not input_invalid:
     combat_strength = int(combat_strength)
     m_combat_strength = int(m_combat_strength)
 
+
+#Question 5 (cont.)
+if monster_won_recently:
+    combat_strength += 1
+else:
+    m_combat_strength += 1
+    
+    print(combat_strength)
+    print(m_combat_strength)
+    
+    
+    
     # Roll for weapon
     print("    |", end="    ")
     input("Roll the dice for your weapon (Press enter)")
@@ -117,40 +167,27 @@ if not input_invalid:
     print("    |    Player rolled " + str(m_health_points) + " health points for the monster")
 
     # Collect Loot
-    print("!!You find a loot bag!! You look inside to find 2 items:")
-    input("Roll for first item (Press enter)")
-    # lootRoll = random.choice(range(1, len(loot_options) + 1))
-    # loot = loot_options.pop(lootRoll - 1)
-    # belt.append(loot)
-    # print("Your belt: ", belt)
-    loot_options, belt= functions_lab05.collect_loot(loot_options, belt)
+    print("    ------------------------------------------------------------------")
+    print("    |    !!You find a loot bag!! You look inside to find 2 items:")
+    print("    |", end="    ")
+    input("Roll for first item (enter)")
 
-    # Second time Collecting Loot
+    # Collect Loot First time
+    loot_options, belt = functions_lab06.collect_loot(loot_options, belt)
+    print("    ------------------------------------------------------------------")
+    print("    |", end="    ")
     input("Roll for second item (Press enter)")
-    
-    # lootRoll = random.choice(range(1, len(loot_options) + 1))
-    # loot = loot_options.pop(lootRoll - 1)
-    # belt.append(loot)
-    # print("Your belt: ", belt)
-    loot_options, belt = functions_lab05.collect_loot(loot_options, belt)
 
-    # Organize Belt
-    print("You're super neat, so you organize your belt alphabetically:")
+    # Collect Loot Second time
+    loot_options, belt = functions_lab06.collect_loot(loot_options, belt)
+
+    print("    |    You're super neat, so you organize your belt alphabetically:")
     belt.sort()
-    print("Your belt: ", belt)
+    print("    |    Your belt: ", belt)
 
     # Use Loot
-    print("!!You see a monster in the distance! So you quickly use your first item:")
-    # first_item = belt.pop(0)
-    # if first_item in good_loot_options:
-    #     health_points = min(6, (health_points + 2))
-    #     print("You used " + first_item + " to up your health to " + str(health_points))
-    # elif first_item in bad_loot_options:
-    #     health_points = max(0, (health_points - 2))
-    #     print("You used " + first_item + " to hurt your health to " + str(health_points))
-    # else:
-    #     print("You used " + first_item + " but it's not helpful")                   
-    belt, health_points = functions_lab05.use_loot(belt, health_points)
+    belt, health_points = functions_lab06.use_loot(belt, health_points)
+
     print("    ------------------------------------------------------------------")
     print("    |", end="    ")
     input("Analyze the roll (Press enter)")
@@ -186,43 +223,113 @@ if not input_invalid:
     print("    |    The monster's combat strength is now " + str(
         m_combat_strength) + " using the " + power_roll + " magic power")
 
-#Q6: Inception Dream
+    # Call Recursive function
+    print("    |", end="    ")
+    
+    #Question 6
+input_invalid = True
+attempts = 0
 
+while input_invalid and attempts < 3:
+    attempts += 1
+    num_dream_lvls = input("How many dream levels do you want to go down? (0-3): ")
+    
+    if num_dream_lvls.isnumeric():
+        num_dream_lvls = int(num_dream_lvls)
+        if num_dream_lvls in range(0, 4):  
+            input_invalid = False
+        else:
+            print("Your input was not valid. Please enter a number between 0 and 3.")
+    else:
+        print("Your input was not valid. Please enter a number between 0 and 3.")
+
+if num_dream_lvls != 0 and not input_invalid:
+    health_points -= 1
+    crazy_level = functions_lab06.inception_dream(num_dream_lvls)
+    combat_strength += crazy_level
+    print("Combat strength:", combat_strength)
+    print("Health points:", health_points)
+ 
 
     # Fight Sequence
     # Loop while the monster and the player are alive. Call fight sequence functions
-    print("You meet the monster. FIGHT!!")
+    print("    ------------------------------------------------------------------")
+    print("    |    You meet the monster. FIGHT!!")
+    hero_won = False
     while m_health_points > 0 and health_points > 0:
+        # Fight Sequence
+        print("    |", end="    ")
 
-        input("You strike first (Press Enter)")
-        m_health_points = functions_lab05.hero_attacks(combat_strength, m_health_points)
-        if m_health_points == 0:
-            num_stars = 3
+        # Lab 5: Question 5:
+        input("Roll to see who strikes first (Press Enter)")
+        attack_roll = random.choice(small_dice_options)
+        if not (attack_roll % 2 == 0):
+            print("    |", end="    ")
+            input("You strike (Press enter)")
+            m_health_points = functions_lab06.hero_attacks(combat_strength, m_health_points)
+            if m_health_points == 0:
+                num_stars = 3
+                hero_won  = True
+            else:
+                print("    |", end="    ")
+                print("------------------------------------------------------------------")
+                input("    |    The monster strikes (Press enter)!!!")
+                health_points = functions_lab06.monster_attacks(m_combat_strength, health_points)
+                if health_points == 0:
+                    num_stars = 1
+                else:
+                    num_stars = 2
         else:
-            input("The monster strikes (Press Enter)")
-            health_points = functions_lab05.monster_attacks(m_combat_strength, health_points)
+            print("    |", end="    ")
+            input("The Monster strikes (Press enter)")
+            health_points = functions_lab06.monster_attacks(m_combat_strength, health_points)
             if health_points == 0:
                 num_stars = 1
             else:
-                num_stars = 2
-                
+                print("    |", end="    ")
+                print("------------------------------------------------------------------")
+                input("The hero strikes!! (Press enter)")
+                m_health_points = functions_lab06.hero_attacks(combat_strength, m_health_points)
+                if m_health_points == 0:
+                    num_stars = 3
+                    hero_won = True
+                else:
+                    num_stars = 2
+
+    # Final Score Display
+    tries = 0
     input_invalid = True
-  
-while input_invalid:
-            hero_name = input("Enter your hero's name(in two words);")
-            hero_names = (hero_names.split())
-          
-            if len(hero_names) !=2:
-                print("Invalid input enter a name with two words")
-            elif not hero_names[0].isalpha() or not hero_name[1].isalpha():
-                 print("Invalid input - enter a name with letters only")
+    while input_invalid and tries in range(5):
+        print("    |", end="    ")
+
+        hero_name = input("Enter your Hero's name (in two words)")
+        name = hero_name.split()
+        if len(name) != 2:
+            print("    |    Please enter a name with two parts (separated by a space)")
+            tries += 1
+        else:
+            if not name[0].isalpha() or not name[1].isalpha():
+                print("    |    Please enter an alphabetical name")
+                tries += 1
             else:
-             input_invalid =False
-short_name = hero_name[0][:2] + hero_names[1][:1]
-print(short_name)
+                short_name = name[0][0:2:1] + name[1][0:1:1]
+                print("    |    I'm going to call you " + short_name + " for short")
+                input_invalid = False
 
-#Q2 star display
-stars = "*" * num_stars
-print(f"Hero {short_name} gets {stars} stars")
-
+    if not input_invalid:
+        stars_display = "*" * num_stars
+        print("    |    Hero " + short_name + " gets <" + stars_display + "> stars")
+ #Questions 3 and 4 
+try:
+    with open("save.txt", "w") as f:
+        if hero_won:
+            save_msg = f"Hero ({short_name}) has killed a monster and gained {num_stars} stars."
+        else:
+            save_msg = "Monster has killed the hero previously."
+        print("Saving:", save_msg)
+        
+        f.write(save_msg + "\n")
+    print("Game progress saved successfully!")
+except Exception as e:
+    print(f"Error saving file: {e}")
 
